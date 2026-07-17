@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useParams, useRouter } from "next/navigation";
-import { Save, Trash2, Upload } from "lucide-react";
+import { Save, Trash2, Upload, Eye } from "lucide-react";
+import CardPreview from "@/components/CardPreview";
 
 
 export default function EditCard(){
@@ -21,6 +22,9 @@ const [card,setCard] = useState(null);
 
 const [preview,setPreview] = useState("");
 
+const [logoPreview,setLogoPreview] = useState("");
+
+
 
 
 
@@ -31,7 +35,6 @@ useEffect(()=>{
 loadCard();
 
 },[]);
-
 
 
 
@@ -55,7 +58,6 @@ const {data,error}=await supabase
 
 
 
-
 if(error){
 
 console.log(error);
@@ -66,13 +68,14 @@ return;
 
 
 
-
 setCard(data);
 
 setPreview(data.photo_url || "");
 
-}
+setLogoPreview(data.company_logo || "");
 
+
+}
 
 
 
@@ -99,9 +102,7 @@ setCard(prev=>({
 
 
 
-
-async function uploadPhoto(file){
-
+async function uploadFile(file){
 
 
 const {
@@ -121,10 +122,10 @@ if(!user)return null;
 const extension=file.name.split(".").pop();
 
 
+
 const fileName=
 
 `${user.id}/${Date.now()}.${extension}`;
-
 
 
 
@@ -136,7 +137,6 @@ const {error}=await supabase.storage
 .from("card-images")
 
 .upload(fileName,file);
-
 
 
 
@@ -154,8 +154,6 @@ return null;
 
 
 
-
-
 const {data}=supabase.storage
 
 .from("card-images")
@@ -165,7 +163,6 @@ const {data}=supabase.storage
 
 
 return data.publicUrl;
-
 
 
 }
@@ -181,7 +178,6 @@ return data.publicUrl;
 async function handlePhoto(e){
 
 
-
 const file=e.target.files[0];
 
 
@@ -190,19 +186,15 @@ if(!file)return;
 
 
 
-
 setPreview(URL.createObjectURL(file));
 
 
 
-
-const url = await uploadPhoto(file);
-
+const url=await uploadFile(file);
 
 
 
 if(url){
-
 
 setCard(prev=>({
 
@@ -225,6 +217,50 @@ photo_url:url
 
 
 
+
+async function handleLogo(e){
+
+
+const file=e.target.files[0];
+
+
+if(!file)return;
+
+
+
+
+setLogoPreview(URL.createObjectURL(file));
+
+
+
+const url=await uploadFile(file);
+
+
+
+if(url){
+
+setCard(prev=>({
+
+...prev,
+
+company_logo:url
+
+}));
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
 async function save(){
 
 
@@ -235,6 +271,7 @@ const {error}=await supabase
 
 .update({
 
+
 first_name:card.first_name,
 
 last_name:card.last_name,
@@ -243,15 +280,30 @@ job_title:card.job_title,
 
 company:card.company,
 
+
+phone:card.phone,
+
 email:card.email,
 
 linkedin:card.linkedin,
 
-photo_url:card.photo_url
+website:card.website,
+
+
+photo_url:card.photo_url,
+
+company_logo:card.company_logo,
+
+
+template:card.template,
+
+theme_color:card.theme_color
+
 
 })
 
 .eq("id",id);
+
 
 
 
@@ -269,11 +321,12 @@ return;
 
 
 
-
-alert("Carte modifiée");
+alert("Carte sauvegardée");
 
 
 router.push("/dashboard");
+
+router.refresh();
 
 
 }
@@ -285,20 +338,20 @@ router.push("/dashboard");
 
 
 
-async function deleteCard(){
 
+
+async function deleteCard(){
 
 
 const confirmDelete = confirm(
 
-"Supprimer définitivement cette carte ?"
+"Supprimer cette carte ?"
 
 );
 
 
 
 if(!confirmDelete)return;
-
 
 
 
@@ -316,7 +369,6 @@ const {error}=await supabase
 
 
 
-
 if(error){
 
 alert(error.message);
@@ -327,16 +379,10 @@ return;
 
 
 
-
-
-alert("Carte supprimée");
-
-
 router.push("/dashboard");
 
 
 }
-
 
 
 
@@ -367,18 +413,17 @@ Chargement...
 
 
 
-
 return (
 
-<div>
 
+<div>
 
 
 <h1 className="
 text-4xl
 font-bold
 text-white
-mb-8
+mb-10
 ">
 
 Modifier ma carte
@@ -391,6 +436,16 @@ Modifier ma carte
 
 
 
+<div className="
+grid
+lg:grid-cols-2
+gap-10
+">
+
+
+
+
+
 
 <div className="
 bg-[#111827]
@@ -398,7 +453,6 @@ border
 border-gray-800
 rounded-3xl
 p-8
-max-w-xl
 space-y-5
 ">
 
@@ -408,12 +462,10 @@ space-y-5
 
 
 
-
-
 <label className="
 flex
-items-center
 gap-3
+items-center
 bg-[#0B0F19]
 border
 border-gray-700
@@ -423,9 +475,10 @@ text-white
 cursor-pointer
 ">
 
+
 <Upload size={18}/>
 
-Changer la photo
+Changer photo
 
 
 <input
@@ -447,27 +500,40 @@ onChange={handlePhoto}
 
 
 
+<label className="
+flex
+gap-3
+items-center
+bg-[#0B0F19]
+border
+border-gray-700
+rounded-xl
+p-3
+text-white
+cursor-pointer
+">
 
 
+<Upload size={18}/>
 
-{
+Changer logo
 
-preview &&
 
-<img
+<input
 
-src={preview}
+type="file"
 
-className="
-w-28
-h-28
-rounded-full
-object-cover
-"
+accept="image/*"
+
+className="hidden"
+
+onChange={handleLogo}
 
 />
 
-}
+
+</label>
+
 
 
 
@@ -482,12 +548,11 @@ className="input-style"
 
 value={card.first_name || ""}
 
-onChange={(e)=>update("first_name",e.target.value)}
-
 placeholder="Prénom"
 
-/>
+onChange={(e)=>update("first_name",e.target.value)}
 
+/>
 
 
 
@@ -500,9 +565,9 @@ className="input-style"
 
 value={card.last_name || ""}
 
-onChange={(e)=>update("last_name",e.target.value)}
-
 placeholder="Nom"
+
+onChange={(e)=>update("last_name",e.target.value)}
 
 />
 
@@ -518,9 +583,9 @@ className="input-style"
 
 value={card.job_title || ""}
 
-onChange={(e)=>update("job_title",e.target.value)}
-
 placeholder="Poste"
+
+onChange={(e)=>update("job_title",e.target.value)}
 
 />
 
@@ -536,9 +601,27 @@ className="input-style"
 
 value={card.company || ""}
 
+placeholder="Entreprise"
+
 onChange={(e)=>update("company",e.target.value)}
 
-placeholder="Entreprise"
+/>
+
+
+
+
+
+
+
+<input
+
+className="input-style"
+
+value={card.phone || ""}
+
+placeholder="Téléphone"
+
+onChange={(e)=>update("phone",e.target.value)}
 
 />
 
@@ -554,9 +637,9 @@ className="input-style"
 
 value={card.email || ""}
 
-onChange={(e)=>update("email",e.target.value)}
-
 placeholder="Email"
+
+onChange={(e)=>update("email",e.target.value)}
 
 />
 
@@ -572,11 +655,90 @@ className="input-style"
 
 value={card.linkedin || ""}
 
-onChange={(e)=>update("linkedin",e.target.value)}
-
 placeholder="LinkedIn"
 
+onChange={(e)=>update("linkedin",e.target.value)}
+
 />
+
+
+
+
+
+
+
+<input
+
+className="input-style"
+
+value={card.website || ""}
+
+placeholder="Site entreprise"
+
+onChange={(e)=>update("website",e.target.value)}
+
+/>
+
+
+
+
+
+
+
+
+
+<select
+
+className="input-style"
+
+value={card.template || "premium"}
+
+onChange={(e)=>update("template",e.target.value)}
+
+>
+
+
+<option value="premium">
+
+Premium Dark
+
+</option>
+
+
+<option value="minimal">
+
+Minimal
+
+</option>
+
+
+<option value="gradient">
+
+Gradient
+
+</option>
+
+
+</select>
+
+
+
+
+
+
+
+
+
+<input
+
+type="color"
+
+value={card.theme_color || "#2563eb"}
+
+onChange={(e)=>update("theme_color",e.target.value)}
+
+/>
+
 
 
 
@@ -593,14 +755,12 @@ onClick={save}
 className="
 w-full
 bg-blue-600
-hover:bg-blue-500
-rounded-xl
 p-4
+rounded-xl
 text-white
 font-semibold
 flex
 justify-center
-items-center
 gap-2
 "
 
@@ -620,6 +780,7 @@ Sauvegarder
 
 
 
+
 <button
 
 onClick={deleteCard}
@@ -627,22 +788,56 @@ onClick={deleteCard}
 className="
 w-full
 bg-red-600
-hover:bg-red-500
-rounded-xl
 p-4
+rounded-xl
 text-white
 font-semibold
 flex
 justify-center
-items-center
 gap-2
 "
 
 >
 
+
 <Trash2 size={20}/>
 
-Supprimer la carte
+
+Supprimer
+
+
+</button>
+
+
+
+
+
+
+
+
+
+
+<button
+
+onClick={()=>router.push(`/card/${card.slug}`)}
+
+className="
+w-full
+bg-gray-700
+p-4
+rounded-xl
+text-white
+font-semibold
+flex
+justify-center
+gap-2
+"
+
+>
+
+<Eye size={20}/>
+
+Voir la carte
 
 </button>
 
@@ -655,10 +850,51 @@ Supprimer la carte
 </div>
 
 
+
+
+
+
+
+
+
+<div className="
+flex
+justify-center
+items-start
+">
+
+
+<CardPreview
+
+card={{
+
+...card,
+
+photo_url:card.photo_url,
+
+company_logo:card.company_logo
+
+}}
+
+/>
+
+
 </div>
 
 
-);
 
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+
+)
 
 }

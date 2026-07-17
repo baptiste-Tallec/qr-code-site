@@ -1,15 +1,17 @@
 "use client";
 
 import { Save, Upload } from "lucide-react";
-import { QRCodeCanvas } from "qrcode.react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import CardPreview from "@/components/CardPreview";
 
 
 export default function CreateCard(){
 
+
 const router = useRouter();
+
 
 
 const [card,setCard] = useState({
@@ -19,13 +21,84 @@ last_name:"",
 job:"",
 company:"",
 email:"",
+phone:"",
 linkedin:"",
+website:"",
+
 photo:"",
 photo_url:"",
-slug:"",
-theme_color:"#2563eb"
+
+company_logo:"",
+logo_preview:"",
+
+template:"premium",
+
+theme_color:"#2563eb",
+
+slug:""
 
 });
+
+
+
+
+
+// CHARGE LES PREFERENCES UTILISATEUR
+
+useEffect(()=>{
+
+loadPreferences();
+
+},[]);
+
+
+
+
+
+
+async function loadPreferences(){
+
+
+const {
+
+data:{user}
+
+}=await supabase.auth.getUser();
+
+
+
+if(user){
+
+
+const prefs = user.user_metadata || {};
+
+
+
+setCard(prev=>({
+
+...prev,
+
+
+template:
+prefs.default_template || prev.template,
+
+
+theme_color:
+prefs.primary_color || prev.theme_color
+
+
+}));
+
+
+}
+
+
+
+}
+
+
+
+
 
 
 
@@ -47,7 +120,10 @@ setCard(prev=>({
 
 
 
-async function uploadPhoto(file){
+
+
+
+async function uploadFile(file,bucket){
 
 
 const {
@@ -58,12 +134,13 @@ data:{user}
 
 
 
-if(!user) return null;
+if(!user)return null;
 
 
 
 
 const extension=file.name.split(".").pop();
+
 
 
 const fileName=
@@ -76,10 +153,9 @@ const fileName=
 
 const {error}=await supabase.storage
 
-.from("card-images")
+.from(bucket)
 
 .upload(fileName,file);
-
 
 
 
@@ -98,7 +174,7 @@ return null;
 
 const {data}=supabase.storage
 
-.from("card-images")
+.from(bucket)
 
 .getPublicUrl(fileName);
 
@@ -115,14 +191,13 @@ return data.publicUrl;
 
 
 
-async function handlePhoto(e){
 
+
+async function handlePhoto(e){
 
 const file=e.target.files[0];
 
-
 if(!file)return;
-
 
 
 
@@ -136,9 +211,7 @@ photo:URL.createObjectURL(file)
 
 
 
-
-const url = await uploadPhoto(file);
-
+const url=await uploadFile(file,"card-images");
 
 
 if(url){
@@ -163,6 +236,53 @@ photo_url:url
 
 
 
+
+async function handleLogo(e){
+
+const file=e.target.files[0];
+
+
+if(!file)return;
+
+
+
+setCard(prev=>({
+
+...prev,
+
+logo_preview:URL.createObjectURL(file)
+
+}));
+
+
+
+
+const url=await uploadFile(file,"card-images");
+
+
+if(url){
+
+setCard(prev=>({
+
+...prev,
+
+company_logo:url
+
+}));
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
 async function saveCard(){
 
 
@@ -174,8 +294,6 @@ data:{user}
 
 
 
-
-
 if(!user){
 
 alert("Connexion nécessaire");
@@ -183,6 +301,7 @@ alert("Connexion nécessaire");
 return;
 
 }
+
 
 
 
@@ -211,6 +330,7 @@ const {error}=await supabase
 
 user_id:user.id,
 
+
 first_name:card.first_name,
 
 last_name:card.last_name,
@@ -221,15 +341,27 @@ company:card.company,
 
 email:card.email,
 
+phone:card.phone,
+
 linkedin:card.linkedin,
+
+website:card.website,
+
 
 photo_url:card.photo_url,
 
+company_logo:card.company_logo,
+
+
+template:card.template,
+
 theme_color:card.theme_color,
+
 
 slug:slug
 
 });
+
 
 
 
@@ -246,28 +378,16 @@ return;
 
 
 
+alert("Carte créée avec succès !");
 
 
-router.push(`/card/${slug}`);
+router.push("/dashboard");
+
+router.refresh();
 
 
 }
 
-
-
-
-
-
-
-const cardUrl = card.slug
-
-?
-
-`${window.location.origin}/card/${card.slug}`
-
-:
-
-"";
 
 
 
@@ -296,11 +416,14 @@ Créer ma QR Card
 
 
 
+
 <div className="
 grid
 lg:grid-cols-2
-gap-8
+gap-10
 ">
+
+
 
 
 
@@ -322,7 +445,6 @@ space-y-5
 
 
 
-
 <label className="
 flex
 items-center
@@ -336,7 +458,9 @@ text-white
 cursor-pointer
 ">
 
+
 <Upload size={18}/>
+
 
 Ajouter une photo
 
@@ -363,6 +487,49 @@ onChange={handlePhoto}
 
 
 
+<label className="
+flex
+items-center
+gap-3
+bg-[#0B0F19]
+border
+border-gray-700
+rounded-xl
+p-3
+text-white
+cursor-pointer
+">
+
+
+<Upload size={18}/>
+
+
+Logo entreprise
+
+
+<input
+
+type="file"
+
+accept="image/*"
+
+className="hidden"
+
+onChange={handleLogo}
+
+/>
+
+
+</label>
+
+
+
+
+
+
+
+
+
 <input
 
 className="input-style"
@@ -379,7 +546,6 @@ onChange={(e)=>update("first_name",e.target.value)}
 
 
 
-
 <input
 
 className="input-style"
@@ -391,7 +557,6 @@ value={card.last_name}
 onChange={(e)=>update("last_name",e.target.value)}
 
 />
-
 
 
 
@@ -425,6 +590,23 @@ placeholder="Entreprise"
 value={card.company}
 
 onChange={(e)=>update("company",e.target.value)}
+
+/>
+
+
+
+
+
+
+<input
+
+className="input-style"
+
+placeholder="Téléphone"
+
+value={card.phone}
+
+onChange={(e)=>update("phone",e.target.value)}
 
 />
 
@@ -470,13 +652,73 @@ onChange={(e)=>update("linkedin",e.target.value)}
 
 
 
+<input
+
+className="input-style"
+
+placeholder="Site entreprise"
+
+value={card.website}
+
+onChange={(e)=>update("website",e.target.value)}
+
+/>
+
+
+
+
+
+
+
+
+
+<select
+
+className="input-style"
+
+value={card.template}
+
+onChange={(e)=>update("template",e.target.value)}
+
+>
+
+
+<option value="premium">
+
+Premium Dark
+
+</option>
+
+
+<option value="minimal">
+
+Minimal
+
+</option>
+
+
+<option value="gradient">
+
+Gradient
+
+</option>
+
+
+</select>
+
+
+
+
+
+
+
+
+
 <div className="text-white">
 
-<p className="mb-2">
 
-Couleur de la carte
+<p>Couleur</p>
 
-</p>
 
 
 <input
@@ -487,18 +729,10 @@ value={card.theme_color}
 
 onChange={(e)=>update("theme_color",e.target.value)}
 
-className="
-w-16
-h-10
-rounded
-cursor-pointer
-"
-
 />
 
 
 </div>
-
 
 
 
@@ -526,10 +760,13 @@ gap-2
 
 >
 
+
 <Save size={20}/>
+
 
 Créer ma carte
 
+
 </button>
 
 
@@ -547,183 +784,30 @@ Créer ma carte
 
 
 
-
-
-
 <div className="
-bg-[#111827]
-border
-border-gray-800
-rounded-3xl
-p-8
 flex
 justify-center
-items-center
+items-start
 ">
 
 
+<CardPreview
 
+card={{
 
+...card,
 
+job_title:card.job,
 
+photo_url:card.photo_url,
 
-
-<div
-
-style={{
-
-borderTop:`8px solid ${card.theme_color}`
-
-}}
-
-className="
-bg-white
-rounded-3xl
-p-8
-text-center
-text-black
-w-full
-max-w-sm
-"
-
->
-
-
-
-
-
-
-{
-
-card.photo ?
-
-<img
-
-src={card.photo}
-
-className="
-w-24
-h-24
-rounded-full
-mx-auto
-object-cover
-"
-
-/>
-
-:
-
-<div className="
-w-24
-h-24
-rounded-full
-bg-gray-200
-mx-auto
-flex
-items-center
-justify-center
-text-4xl
-">
-
-👤
-
-</div>
-
-}
-
-
-
-
-
-<h2 className="text-2xl font-bold mt-5">
-
-{card.first_name || "Votre prénom"}
-
-{" "}
-
-{card.last_name}
-
-</h2>
-
-
-
-
-
-<p className="text-gray-500">
-
-{card.job || "Votre poste"}
-
-</p>
-
-
-
-
-
-
-<p className="font-semibold mt-3">
-
-{card.company || "Entreprise"}
-
-</p>
-
-
-
-
-
-
-<button
-
-style={{
-
-backgroundColor:card.theme_color
+company_logo:card.company_logo
 
 }}
-
-className="
-mt-6
-w-full
-text-white
-rounded-xl
-p-3
-"
-
->
-
-✉ Email
-
-</button>
-
-
-
-
-
-
-
-
-<QRCodeCanvas
-
-value={
-
-`${typeof window !== "undefined" ? window.location.origin : ""}/card/${card.slug || "preview"}`
-
-}
-
-size={150}
 
 />
 
 
-
-
-
-
-
-</div>
-
-
-
-
-
 </div>
 
 
@@ -735,10 +819,10 @@ size={150}
 </div>
 
 
+
 </div>
 
-
-);
+)
 
 
 }

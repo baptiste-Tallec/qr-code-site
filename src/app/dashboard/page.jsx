@@ -254,7 +254,7 @@ p-6
 
 <Link
 
-href={`/card/${card.slug}`}
+href={`/dashboard/card/${card.id}`}
 
 target="_blank"
 

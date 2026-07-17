@@ -1,14 +1,14 @@
 import { supabase } from "@/lib/supabase";
 import CardQRCode from "@/components/CardQRCode";
 import AddContactButton from "@/components/AddContactButton";
+import ShareCardButton from "@/components/ShareCardButton";
 
 
 
 export default async function PublicCard({params}){
 
 
-const {slug}=params;
-
+const {slug} = await params;
 
 
 
@@ -19,9 +19,19 @@ const {data:card,error}=await supabase
 
 .select("*")
 
-.eq("slug",slug)
+.eq("slug", slug)
 
-.single();
+.maybeSingle();
+
+
+
+
+console.log("Slug reçu :", slug);
+
+console.log("Carte trouvée :", card);
+
+console.log("Erreur :", error);
+
 
 
 
@@ -67,8 +77,31 @@ Carte introuvable
 
 
 
+function formatLink(link){
+
+if(!link) return "";
+
+return link.startsWith("http")
+
+?
+
+link
+
+:
+
+`https://${link}`;
+
+}
+
+
+
+
+
+
+
 
 return (
+
 
 <div
 
@@ -89,8 +122,9 @@ p-6
 
 
 
-<div
 
+
+<div
 
 style={{
 
@@ -98,7 +132,6 @@ borderTop:
 `10px solid ${card.theme_color || "#2563eb"}`
 
 }}
-
 
 
 className="
@@ -113,6 +146,38 @@ text-black
 "
 
 >
+
+
+
+
+
+
+
+
+
+{/* LOGO ENTREPRISE */}
+
+
+{
+
+card.company_logo &&
+
+<img
+
+src={card.company_logo}
+
+className="
+w-16
+h-16
+object-contain
+mx-auto
+mb-5
+"
+
+/>
+
+}
+
 
 
 
@@ -173,7 +238,6 @@ object-cover
 }
 
 
-
 </div>
 
 
@@ -185,7 +249,6 @@ object-cover
 
 
 {/* NOM */}
-
 
 
 <h1 className="text-3xl font-bold mt-6">
@@ -211,7 +274,6 @@ object-cover
 {/* POSTE */}
 
 
-
 <p className="text-gray-500 mt-3">
 
 
@@ -231,7 +293,6 @@ object-cover
 {/* ENTREPRISE */}
 
 
-
 <p className="font-semibold mt-4">
 
 
@@ -248,7 +309,7 @@ object-cover
 
 
 
-{/* CONTACT */}
+{/* LIENS */}
 
 
 
@@ -256,6 +317,57 @@ object-cover
 
 
 
+
+
+
+
+{/* TELEPHONE */}
+
+
+{
+
+card.phone &&
+
+
+<a
+
+href={`tel:${card.phone}`}
+
+
+style={{
+
+backgroundColor:
+card.theme_color || "#2563eb"
+
+}}
+
+
+className="
+block
+text-white
+rounded-xl
+p-3
+font-semibold
+"
+
+>
+
+📞 Téléphone
+
+</a>
+
+
+}
+
+
+
+
+
+
+
+
+
+{/* EMAIL */}
 
 
 {
@@ -268,14 +380,12 @@ card.email &&
 href={`mailto:${card.email}`}
 
 
-
 style={{
 
 backgroundColor:
 card.theme_color || "#2563eb"
 
 }}
-
 
 
 className="
@@ -301,6 +411,11 @@ font-semibold
 
 
 
+
+
+{/* LINKEDIN */}
+
+
 {
 
 card.linkedin &&
@@ -308,10 +423,9 @@ card.linkedin &&
 
 <a
 
-href={card.linkedin}
+href={formatLink(card.linkedin)}
 
 target="_blank"
-
 
 
 style={{
@@ -320,7 +434,6 @@ backgroundColor:
 card.theme_color || "#2563eb"
 
 }}
-
 
 
 className="
@@ -342,6 +455,59 @@ font-semibold
 
 
 
+
+
+
+
+
+
+{/* SITE ENTREPRISE */}
+
+
+
+{
+
+card.website &&
+
+
+<a
+
+href={formatLink(card.website)}
+
+target="_blank"
+
+
+style={{
+
+backgroundColor:
+card.theme_color || "#2563eb"
+
+}}
+
+
+className="
+block
+text-white
+rounded-xl
+p-3
+font-semibold
+"
+
+>
+
+🌐 Site entreprise
+
+</a>
+
+
+}
+
+
+
+
+
+
+
 </div>
 
 
@@ -352,11 +518,20 @@ font-semibold
 
 
 
-{/* CONTACT TELEPHONE */}
+
+{/* AJOUT CONTACT */}
 
 
 
 <AddContactButton
+
+card={card}
+
+/>
+
+
+
+<ShareCardButton
 
 card={card}
 
@@ -395,6 +570,7 @@ process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
 
 
 </div>
+
 
 
 
