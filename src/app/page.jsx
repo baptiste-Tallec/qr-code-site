@@ -138,19 +138,7 @@ export default function Home(){
             <div className="grid grid-cols-2 gap-3 mt-6">
 
 
-<div className="
-bg-white/5
-border
-border-white/10
-rounded-xl
-py-3
-flex
-items-center
-justify-center
-gap-2
-text-xs
-font-semibold
-">
+<div className="bg-white/5 border border-white/10 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-semibold">
 
 <Phone size={14}/>
 
@@ -160,19 +148,7 @@ Appeler
 
 
 
-<div className="
-bg-white/5
-border
-border-white/10
-rounded-xl
-py-3
-flex
-items-center
-justify-center
-gap-2
-text-xs
-font-semibold
-">
+<div className="bg-white/5 border border-white/10 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-semibold">
 
 <Mail size={14}/>
 
@@ -182,19 +158,7 @@ Email
 
 
 
-<div className="
-bg-white/5
-border
-border-white/10
-rounded-xl
-py-3
-flex
-items-center
-justify-center
-gap-2
-text-xs
-font-semibold
-">
+<div className="bg-white/5 border border-white/10 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-semibold">
 
 <LinkIcon size={14}/>
 
@@ -204,19 +168,7 @@ LinkedIn
 
 
 
-<div className="
-bg-white/5
-border
-border-white/10
-rounded-xl
-py-3
-flex
-items-center
-justify-center
-gap-2
-text-xs
-font-semibold
-">
+<div className="bg-white/5 border border-white/10 rounded-xl py-3 flex items-center justify-center gap-2 text-xs font-semibold">
 
 <Globe size={14}/>
 
@@ -227,15 +179,7 @@ Site
 
 </div>
 
-            <div className="
-              mt-6
-              bg-white
-              rounded-2xl
-              p-4
-              flex
-              items-center
-              justify-center
-              ">
+            <div className="mt-6 bg-white rounded-2xl p-4 flex items-center justify-center">
 
               <QRCodeCanvas
 
@@ -328,21 +272,10 @@ Site
 
           {/* CARTE PAPIER */}
 
-          <div className="
-          bg-[#111827]
-          border
-          border-gray-800
-          rounded-3xl
-          p-8
-          ">
+          <div className="bg-[#111827] border border-gray-800 rounded-3xl p-8">
 
 
-            <h3 className="
-            text-xl
-            font-bold
-            text-white
-            mb-6
-            ">
+            <h3 className="text-xl font-bold text-white mb-6">
 
               Carte de visite classique
 
@@ -413,21 +346,10 @@ Site
           {/* QR CARD */}
 
 
-          <div className="
-          bg-blue-600/10
-          border
-          border-blue-500/30
-          rounded-3xl
-          p-8
-          ">
+          <div className="bg-blue-600/10 border border-blue-500/30 rounded-3xl p-8">
 
 
-            <h3 className="
-            text-xl
-            font-bold
-            text-white
-            mb-6
-            ">
+            <h3 className="text-xl font-bold text-white mb-6">
 
               Votre QR Card digitale
 
