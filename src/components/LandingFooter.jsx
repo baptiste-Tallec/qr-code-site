@@ -60,8 +60,8 @@ export default function Footer() {
             </h4>
             <div className="flex flex-col gap-3 text-sm text-gray-500">
               <span>Contact</span>
-              <a href="mailto:contact@qrcard.app" className="hover:text-white transition">
-                contact@qrcard.app
+              <a href="mailto:qr.business.carte@gmail.com" className="hover:text-white transition">
+                qr.business.carte@gmail.com
               </a>
             </div>
           </div>
