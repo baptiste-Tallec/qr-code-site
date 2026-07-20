@@ -1,10 +1,10 @@
 "use client";
 
 
-import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/LandingFooter";
 import FeatureCard from "@/components/FeatureCard";
+
 import {
   QrCode,
   Zap,
@@ -17,8 +17,15 @@ import {
   Play,
   Phone,
   Mail,
-  Sparkles
+  Globe,
+  Link as LinkIcon,
+  Sparkles,
 } from "lucide-react";
+
+
+import { QRCodeCanvas } from "qrcode.react";
+import { useRouter } from "next/navigation";
+
 
 
 export default function Home(){
@@ -50,15 +57,14 @@ export default function Home(){
           </div>
 
           <h1 className="text-5xl md:text-6xl font-bold leading-[1.1] mt-6">
-            Votre carte de visite professionnelle,
+            Votre identité professionnelle,
             <br/>
-            <span className="text-blue-500">toujours dans votre poche.</span>
+            <span className="text-blue-500">accessible en un simple scan.</span>
           </h1>
 
           <p className="text-gray-400 text-lg mt-6 max-w-lg leading-relaxed">
-            Créez une carte digitale avec QR code, partagez vos informations
-            instantanément et permettez à vos clients de vous contacter en un
-            clic.
+            Créez une carte digitale moderne avec QR Code.
+            Partagez vos coordonnées, vos réseaux et votre site en un clic.
           </p>
 
           <div className="flex flex-wrap gap-4 mt-10">
@@ -129,19 +135,116 @@ export default function Home(){
               Nova Studio
             </p>
 
-            <div className="flex gap-3 mt-6">
-              <div className="flex-1 bg-white/5 border border-white/10 rounded-xl py-2.5 flex items-center justify-center gap-2 text-xs font-semibold">
-                <Phone size={14}/>
-                Appeler
-              </div>
-              <div className="flex-1 bg-white/5 border border-white/10 rounded-xl py-2.5 flex items-center justify-center gap-2 text-xs font-semibold">
-                <Mail size={14}/>
-                Email
-              </div>
-            </div>
+            <div className="grid grid-cols-2 gap-3 mt-6">
 
-            <div className="mt-6 bg-white rounded-2xl p-4 flex items-center justify-center">
-              <QrCode size={110} className="text-black"/>
+
+<div className="
+bg-white/5
+border
+border-white/10
+rounded-xl
+py-3
+flex
+items-center
+justify-center
+gap-2
+text-xs
+font-semibold
+">
+
+<Phone size={14}/>
+
+Appeler
+
+</div>
+
+
+
+<div className="
+bg-white/5
+border
+border-white/10
+rounded-xl
+py-3
+flex
+items-center
+justify-center
+gap-2
+text-xs
+font-semibold
+">
+
+<Mail size={14}/>
+
+Email
+
+</div>
+
+
+
+<div className="
+bg-white/5
+border
+border-white/10
+rounded-xl
+py-3
+flex
+items-center
+justify-center
+gap-2
+text-xs
+font-semibold
+">
+
+<LinkIcon size={14}/>
+
+LinkedIn
+
+</div>
+
+
+
+<div className="
+bg-white/5
+border
+border-white/10
+rounded-xl
+py-3
+flex
+items-center
+justify-center
+gap-2
+text-xs
+font-semibold
+">
+
+<Globe size={14}/>
+
+Site
+
+</div>
+
+
+</div>
+
+            <div className="
+              mt-6
+              bg-white
+              rounded-2xl
+              p-4
+              flex
+              items-center
+              justify-center
+              ">
+
+              <QRCodeCanvas
+
+              value="https://qrcard.app/card/alexandre-martin"
+
+              size={120}
+
+              />
+
             </div>
 
             <p className="text-center text-xs text-gray-500 mt-4">
@@ -196,6 +299,206 @@ export default function Home(){
           />
 
         </div>
+
+      </section>
+
+
+            {/* POURQUOI QR CARD */}
+
+      <section className="max-w-7xl mx-auto px-6 py-24">
+
+        <div className="text-center max-w-3xl mx-auto mb-16">
+
+          <h2 className="text-4xl font-bold">
+            La carte de visite réinventée
+          </h2>
+
+          <p className="text-gray-400 mt-4 text-lg">
+            Plus moderne qu'une carte papier, plus pratique qu'un simple contact.
+            Vos informations restent toujours accessibles et modifiables.
+          </p>
+
+        </div>
+
+
+
+        <div className="grid md:grid-cols-2 gap-8">
+
+
+
+          {/* CARTE PAPIER */}
+
+          <div className="
+          bg-[#111827]
+          border
+          border-gray-800
+          rounded-3xl
+          p-8
+          ">
+
+
+            <h3 className="
+            text-xl
+            font-bold
+            text-white
+            mb-6
+            ">
+
+              Carte de visite classique
+
+            </h3>
+
+
+
+            <div className="space-y-4 text-gray-400">
+
+
+              <p className="flex gap-3 items-center">
+
+                <span className="text-red-500 text-xl">
+                  ✕
+                </span>
+
+                Peut être perdue facilement
+
+              </p>
+
+
+
+              <p className="flex gap-3 items-center">
+
+                <span className="text-red-500 text-xl">
+                  ✕
+                </span>
+
+                Informations impossibles à modifier
+
+              </p>
+
+
+
+              <p className="flex gap-3 items-center">
+
+                <span className="text-red-500 text-xl">
+                  ✕
+                </span>
+
+                Aucun lien direct vers vos réseaux
+
+              </p>
+
+
+
+              <p className="flex gap-3 items-center">
+
+                <span className="text-red-500 text-xl">
+                  ✕
+                </span>
+
+                Impression à refaire régulièrement
+
+              </p>
+
+
+            </div>
+
+
+          </div>
+
+
+
+
+
+
+          {/* QR CARD */}
+
+
+          <div className="
+          bg-blue-600/10
+          border
+          border-blue-500/30
+          rounded-3xl
+          p-8
+          ">
+
+
+            <h3 className="
+            text-xl
+            font-bold
+            text-white
+            mb-6
+            ">
+
+              Votre QR Card digitale
+
+            </h3>
+
+
+
+
+            <div className="space-y-4 text-gray-300">
+
+
+              <p className="flex gap-3 items-center">
+
+                <span className="text-green-400 text-xl">
+                  ✓
+                </span>
+
+                Toujours accessible depuis un QR Code
+
+              </p>
+
+
+
+
+              <p className="flex gap-3 items-center">
+
+                <span className="text-green-400 text-xl">
+                  ✓
+                </span>
+
+                Modifiable à tout moment
+
+              </p>
+
+
+
+
+              <p className="flex gap-3 items-center">
+
+                <span className="text-green-400 text-xl">
+                  ✓
+                </span>
+
+                Téléphone, email, LinkedIn et site en un clic
+
+              </p>
+
+
+
+
+              <p className="flex gap-3 items-center">
+
+                <span className="text-green-400 text-xl">
+                  ✓
+                </span>
+
+                Enregistrement du contact instantané
+
+              </p>
+
+
+
+            </div>
+
+
+          </div>
+
+
+
+        </div>
+
 
       </section>
 

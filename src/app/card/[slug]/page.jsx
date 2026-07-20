@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase";
 import CardQRCode from "@/components/CardQRCode";
 import AddContactButton from "@/components/AddContactButton";
 import ShareCardButton from "@/components/ShareCardButton";
+import PoweredBy from "@/components/PoweredBy";
 
 
 
@@ -563,6 +564,10 @@ process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
 
 </div>
 
+
+{/* BRANDING */}
+
+<PoweredBy />
 
 
 
